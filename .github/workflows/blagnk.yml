@@ -18,16 +18,19 @@ jobs:
 
     - name: Download MKV video
       run: |
-        curl -L "https://tipistream.tipikuy.workers.dev/download.aspx?file=PV2dopDYXmnahtsp%2FL4PqLTtay3PhIMkfbYdRfFcuR5y8RRcC7ECXUJo66CRpkSB&expiry=ZZ%2FCZ3cXx%2FhSN0MSzB%2BNoA%3D%3D&mac=596d725068361c190746c581d512afb9e5d0a628ea69f38e1ecb6bb7dc9c775b" -o input.mkv
+        curl -L "https://kqrumi.xyz/0:findpath?id=16QalfzARBbAAvngdNlH5hGIJihpBWhuf" -o input.mkv
 
     - name: Convert MKV to MP4
       run: ffmpeg -i input.mkv -c:v libx264 -c:a aac -strict experimental output.mp4
 
-    - name: Commit and push converted video
+    - name: Commit converted video
       run: |
-        git config --global user.email "diru768@gmail.com"
-        git config --global user.name "ilham maulana"
-        git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Ilham311/Mkv.git
+        git config --local user.email "diru768@gmail.com"
+        git config --local user.name "Your Name"
         git add output.mp4
         git commit -m "Add converted MP4 file"
-        git push
+      
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
