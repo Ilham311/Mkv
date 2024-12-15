@@ -26,7 +26,8 @@ jobs:
     - name: Commit and push converted video
       run: |
         git config --global user.email "diru768@gmail.com"
-        git config --global user.name "ilham masalah"
+        git config --global user.name "ilham maulana"
+        git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Ilham311/Mkv.git
         git add output.mp4
         git commit -m "Add converted MP4 file"
         git push
