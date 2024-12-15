@@ -8,21 +8,22 @@ on:
 jobs:
   convert:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Install FFmpeg
-        run: sudo apt-get install -y ffmpeg
+      - name: Install ffmpeg
+        run: sudo apt update && sudo apt install -y ffmpeg
 
-      - name: Download MKV video
-        run: wget -O input.mkv "https://kqrumi.xyz/0:findpath?id=16QalfzARBbAAvngdNlH5hGIJihpBWhuf"
+      - name: Download MKV file
+        run: wget "https://kqrumi.xyz/0:findpath?id=16QalfzARBbAAvngdNlH5hGIJihpBWhuf" -O input.mkv
 
       - name: Convert MKV to MP4
-        run: ffmpeg -i input.mkv -codec copy output.mp4
+        run: ffmpeg -i input.mkv -vcodec libx264 -acodec aac output.mp4
 
-      - name: Upload MP4 video
-        uses: actions/upload-artifact@v2
+      - name: Commit and push changes
+        uses: EndBug/add-and-commit@v7
         with:
-          name: output-video
-          path: output.mp4
+          message: "Add converted MP4 file"
+          add: "output.mp4"
