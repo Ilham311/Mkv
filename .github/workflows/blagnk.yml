@@ -1,4 +1,4 @@
-name: Convert MKV to MP4
+name: Convert MKV to MP4 and Push to GitHub
 
 on:
   push:
@@ -6,24 +6,27 @@ on:
       - main
 
 jobs:
-  convert:
+  convert_and_push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Install ffmpeg
-        run: sudo apt update && sudo apt install -y ffmpeg
+    - name: Install ffmpeg
+      run: sudo apt-get install ffmpeg
 
-      - name: Download MKV file
-        run: wget "https://kqrumi.xyz/0:findpath?id=16QalfzARBbAAvngdNlH5hGIJihpBWhuf" -O input.mkv
+    - name: Download MKV video
+      run: |
+        curl -L "https://kqrumi.xyz/0:findpath?id=16QalfzARBbAAvngdNlH5hGIJihpBWhuf" -o input.mkv
 
-      - name: Convert MKV to MP4
-        run: ffmpeg -i input.mkv -vcodec libx264 -acodec aac output.mp4
+    - name: Convert MKV to MP4
+      run: ffmpeg -i input.mkv -c:v libx264 -c:a aac -strict experimental output.mp4
 
-      - name: Commit and push changes
-        uses: EndBug/add-and-commit@v7
-        with:
-          message: "Add converted MP4 file"
-          add: "output.mp4"
+    - name: Commit and push converted video
+      run: |
+        git config --global user.email "youremail@example.com"
+        git config --global user.name "Your Name"
+        git add output.mp4
+        git commit -m "Add converted MP4 file"
+        git push
