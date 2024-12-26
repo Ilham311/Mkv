@@ -1,4 +1,4 @@
-name: Convert MKV to MP4 and Upload to Google Drive
+name: Download, Convert MKV to MP4, and Upload to Google Drive
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  convert_and_upload:
+  download_convert_and_upload:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +19,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ffmpeg
         python3 -m pip install --upgrade pip
-        python3 -m pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+        python3 -m pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client requests
 
     - name: Create token.pickle
       run: |
@@ -27,11 +27,17 @@ jobs:
 
     - name: Download MKV file
       run: |
-        curl -L -o video.mkv "https://tipistream.tipikuy.workers.dev/download.aspx?file=e7HnSX%2FoHKtnUdtL1A5wcSgiyyg6iLre6tz26ZyO96dZb4enEgeyx1GeRZCEdAz8&expiry=ojLvp9JTbjXEecNLxyz0Iw%3D%3D&mac=ab4ea0ffeb35c5b2fcb28a697b921cc097e4191316822dd2656ca8eb665f1ce0"
+        url="https://tipistream.tipikuy.workers.dev/download.aspx?file=e7HnSX%2FoHKtnUdtL1A5wcSgiyyg6iLre6tz26ZyO96dZb4enEgeyx1GeRZCEdAz8&expiry=ojLvp9JTbjXEecNLxyz0Iw%3D%3D&mac=ab4ea0ffeb35c5b2fcb28a697b921cc097e4191316822dd2656ca8eb665f1ce0"
+        r=$(curl -s -I $url)
+        fname=$(echo "$r" | grep -o -E 'filename=.*' | sed -e 's/filename=//')
+        if [[ -z "$fname" ]]; then
+          fname=$(basename $url)
+        fi
+        curl -L $url -o "$fname"
 
     - name: Convert MKV to MP4
       run: |
-        video="video.mkv"
+        video=$(ls *.mkv)
         opts="-nostats -loglevel 0 -c:v copy -c:a copy -c:s mov_text -movflags +faststart"
         
         if [ -e "${video%.*}.mp4" ]; then
@@ -56,4 +62,4 @@ jobs:
         fi
 
     - name: Upload to Google Drive
-      run: python3 upload_to_gdrive.py video.mp4
+      run: python3 upload_to_gdrive.py "$(ls *.mp4)"
