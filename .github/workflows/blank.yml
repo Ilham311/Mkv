@@ -27,11 +27,11 @@ jobs:
 
     - name: Download MKV file
       run: |
-        curl -L -o video.mkv "https://sxtcp.tg-index.workers.dev/download.aspx?file=naRlIvl%2Bs5RCHMw%2FJPg%2BRnAq7ccMGfLagq10E3S5h%2FejMVt9rpB7oTun4KU5ykwB&expiry=kzN6V3ZPQ3guuSQlbi44MA%3D%3D&mac=bec7656ac78a2b6a45f598d96d66b6721aa5969f3035b633137d41140402aecd"
+        curl -L -o video.mkv "https://kqrumi.xyz/download.aspx?file=whrXhEAGJgOnJvEgcnp1%2BuX96stb7Oqj%2Bd7eBXC8CWcqxMyPPxl5%2FWajYwBtQgsx&expiry=w%2FXTFdPO1yqWFXiBkzvN7w%3D%3D&ip=6wC4ugEAc0cuqCq81hdbsg%3D%3D&mac=d343d91d5b1b85fe00c0328c4ba2da605689429f341d4101754d485daa4592e6"
 
     - name: Convert MKV to MP4
       run: |
-        ffmpeg -i video.mkv -c:v copy -c:a copy -c:s mov_text -movflags +faststart video.mp4
+        ffmpeg -i video.mkv -vf "scale=-1:720" -r 23 -b:v 1M -c:v libx264 -c:a copy -c:s mov_text -movflags +faststart video.mp4
 
     - name: Upload to Google Drive
       run: python3 upload_to_gdrive.py video.mp4
