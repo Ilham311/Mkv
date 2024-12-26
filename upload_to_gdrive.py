@@ -25,14 +25,24 @@ if creds.expired and creds.refresh_token:
 # Build the Google Drive service
 service = build('drive', 'v3', credentials=creds)
 
-def upload_file_to_drive(file_path):
-    file_metadata = {'name': os.path.basename(file_path)}
+def upload_file_to_drive(file_path, folder_id):
+    file_metadata = {
+        'name': os.path.basename(file_path),
+        'parents': [folder_id]
+    }
     media = MediaFileUpload(file_path, mimetype='video/mp4')
-    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-    print(f"File ID: {file.get('id')}")
+    file = service.files().create(body=file_metadata, media_body=media, fields='id, webViewLink').execute()
+    file_id = file.get('id')
+    download_link = f"https://drive.google.com/uc?id={file_id}&export=download"
+    return download_link
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 upload_to_gdrive.py <file_path>")
         sys.exit(1)
-    upload_file_to_drive(sys.argv[1])
+    
+    file_path = sys.argv[1]
+    folder_id = "1BqeRm09e4HkxOahklm2f8YU6qHkvIkPr"  # ID folder di Google Drive
+    
+    link = upload_file_to_drive(file_path, folder_id)
+    print(f"File uploaded successfully. Download it at: {link}")
