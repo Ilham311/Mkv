@@ -1,36 +1,40 @@
-# This is a basic workflow to help you get started with Actions
+name: Convert MKV to MP4 and Upload to Google Drive
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches:
+      - main
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  convert_and_upload:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg mkvtoolnix gpac dcadec aften wget
+        wget -O gdrive https://github.com/prasmussen/gdrive/releases/download/2.1.0/gdrive-linux-x64
+        chmod +x gdrive
+        sudo mv gdrive /usr/local/bin/gdrive
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    - name: Make script executable
+      run: chmod +x ./convert_mkv_to_mp4.sh
+
+    - name: Download MKV file
+      run: |
+        curl -L -o video.mkv "https://tipistream.tipikuy.workers.dev/download.aspx?file=e7HnSX%2FoHKtnUdtL1A5wcSgiyyg6iLre6tz26ZyO96dZb4enEgeyx1GeRZCEdAz8&expiry=ojLvp9JTbjXEecNLxyz0Iw%3D%3D&mac=ab4ea0ffeb35c5b2fcb28a697b921cc097e4191316822dd2656ca8eb665f1ce0"
+
+    - name: Convert MKV to MP4
+      run: ./convert_mkv_to_mp4.sh video.mkv
+
+    - name: Upload to Google Drive
+      env:
+        GDRIVE_TOKEN: ${{ secrets.GDRIVE_TOKEN }}
+      run: |
+        echo "${GDRIVE_TOKEN}" > token.pickle
+        gdrive upload --refresh-token token.pickle video.mp4
