@@ -1,40 +1,32 @@
-#!/bin/sh
-
-# Initial code by thewinchester
-# Modified by CanuckSkier
-# Modified by xav0989
-# SEE http://superuser.com/questions/275193/mkv-to-mp4-transcoding-script-issues/36649
+#!/bin/bash
 
 # Close stdin - avoid accidental keypresses causing problems
-exec 0>&-
+exec 0<&-
 
 # Find MKV files
-for file in "$@";
-do
-  find "$file" -type f -not -name ".*" | grep .mkv$ | while read file
-  do
-    fileProper=$(readlink -f "$file") # full path of file
-    pathNoExt=${fileProper%.*} # full path minus extension
+for file in "$@"; do
+  find "$file" -type f -not -name ".*" | grep .mkv$ | while read file; do
+    fileProper=$(readlink -f "$file") # Full path of file
+    pathNoExt=${fileProper%.*} # Full path minus extension
 
     # Check if MP4 already exists
     if [ -f "$pathNoExt".mp4 ]; then
       echo "MP4 already exists, stopping"
     else
       # Get number of tracks
-      numberOfTracks=`mkvmerge -i "$fileProper" | grep "Track ID" | wc -l`
+      numberOfTracks=$(mkvmerge -i "$fileProper" | grep "Track ID" | wc -l)
       echo "Found $numberOfTracks Tracks"
 
       # Set base extraction command
       extractCmd=(mkvextract tracks "$fileProper")
 
       # Determine type of tracks
-      for (( i=1; i<=$numberOfTracks; i++ ))
-      do
-         trackType=`mkvmerge -i "$fileProper" | grep "Track ID $i" | sed -e 's/^.*: //'`
+      for (( i=1; i<=$numberOfTracks; i++ )); do
+         trackType=$(mkvmerge -i "$fileProper" | grep "Track ID $i" | sed -e 's/^.*: //')
          if [[ "$trackType" == *video* ]]; then
             echo "Track $i is Video"
             extractCmd+=( $i:"$pathNoExt".264)
-            fps=`mkvinfo "$fileProper" | grep duration | sed -e 's/.*(//' -e 's/f.*//' | sed -n ${i}p`
+            fps=$(mkvinfo "$fileProper" | grep duration | sed -e 's/.*(//' -e 's/f.*//' | sed -n ${i}p)
          elif [[ "$trackType" == "audio (A_AAC)" ]]; then
             echo "Track $i is AAC"
             extractCmd+=( $i:"$pathNoExt".aac)
