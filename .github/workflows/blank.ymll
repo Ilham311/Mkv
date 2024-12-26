@@ -17,10 +17,9 @@ jobs:
     - name: Set up dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg mkvtoolnix gpac wget
-        wget -O gdrive https://github.com/prasmussen/gdrive/releases/download/2.1.0/gdrive-linux-x64
-        chmod +x gdrive
-        sudo mv gdrive /usr/local/bin/gdrive
+        sudo apt-get install -y ffmpeg mkvtoolnix gpac
+        python3 -m pip install --upgrade pip
+        python3 -m pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
     - name: Make script executable
       run: chmod +x ./convert_mkv_to_mp4.sh
@@ -37,4 +36,4 @@ jobs:
         GDRIVE_TOKEN: ${{ secrets.GDRIVE_TOKEN }}
       run: |
         echo "${GDRIVE_TOKEN}" > token.pickle
-        gdrive upload --refresh-token token.pickle video.mp4
+        python3 upload_to_gdrive.py video.mp4
