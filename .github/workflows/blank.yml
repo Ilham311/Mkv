@@ -31,7 +31,7 @@ jobs:
 
     - name: Convert MKV to MP4
       run: |
-        ffmpeg -i video.mkv -vf "scale=-1:720" -r 23 -b:v 1M -c:v libx264 -c:a copy -c:s mov_text -movflags +faststart video.mp4
+        ffmpeg -hwaccel cuda -i video.mkv -vf "scale=-1:720" -r 23 -c:v h264_nvenc -c:a copy -c:s mov_text -movflags +faststart video.mp4
 
     - name: Upload to Google Drive
       run: python3 upload_to_gdrive.py video.mp4
