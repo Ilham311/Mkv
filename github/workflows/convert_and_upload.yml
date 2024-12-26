@@ -1,0 +1,40 @@
+name: Convert MKV to MP4 and Upload to Google Drive
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  convert_and_upload:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg mkvtoolnix gpac dcadec aften wget
+        wget -O gdrive https://github.com/prasmussen/gdrive/releases/download/2.1.0/gdrive-linux-x64
+        chmod +x gdrive
+        sudo mv gdrive /usr/local/bin/gdrive
+
+    - name: Make script executable
+      run: chmod +x ./convert_mkv_to_mp4.sh
+
+    - name: Download MKV file
+      run: |
+        curl -L -o video.mkv "URL_OF_THE_MKV_FILE"
+
+    - name: Convert MKV to MP4
+      run: ./convert_mkv_to_mp4.sh video.mkv
+
+    - name: Upload to Google Drive
+      env:
+        GDRIVE_TOKEN: ${{ secrets.GDRIVE_TOKEN }}
+      run: |
+        echo "${GDRIVE_TOKEN}" > token.pickle
+        gdrive upload --refresh-token token.pickle video.mp4
