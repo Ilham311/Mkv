@@ -61,17 +61,17 @@ do
                     mp4BoxCmd+=( -add "$pathNoExt".ac3:disable)
                 elif [ -f "$pathNoExt".dts ]; then
                     # Encode DTS to AC3
-                    dcadec -o wavall "$pathNoExt".dts | aften -v 0 - "$pathNoExt".ac3
+                    ffmpeg -i "$pathNoExt".dts -c:a ac3 "$pathNoExt".ac3
                     mp4BoxCmd+=( -add "$pathNoExt".ac3:disable)
                 fi
             else # Encode AAC from AC3 or DTS
                 if [ -f "$pathNoExt".ac3 ]; then
-                    ffmpeg -i "$pathNoExt".ac3 -acodec pcm_s16le -ac 2 -f wav - | neroAacEnc -lc -br 192000 -ignorelength -if - -of "$pathNoExt".aac
+                    ffmpeg -i "$pathNoExt".ac3 -c:a aac -b:a 192k "$pathNoExt".aac
                     mp4BoxCmd+=( -add "$pathNoExt".aac -add "$pathNoExt".ac3:disable)
                 elif [ -f "$pathNoExt".dts ]; then
-                    ffmpeg -i "$pathNoExt".dts -acodec pcm_s16le -ac 2 -f wav - | neroAacEnc -lc -br 192000 -ignorelength -if - -of "$pathNoExt".aac
+                    ffmpeg -i "$pathNoExt".dts -c:a aac -b:a 192k "$pathNoExt".aac
                     # Encode DTS to AC3
-                    dcadec -o wavall "$pathNoExt".dts | aften -v 0 - "$pathNoExt".ac3
+                    ffmpeg -i "$pathNoExt".dts -c:a ac3 "$pathNoExt".ac3
                     mp4BoxCmd+=( -add "$pathNoExt".aac -add "$pathNoExt".ac3:disable)
                 else
                     echo "Warning: no audio file found"
