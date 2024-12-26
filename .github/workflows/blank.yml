@@ -31,7 +31,7 @@ jobs:
 
     - name: Convert MKV to MP4 with Hardware Acceleration
       run: |
-        ffmpeg -hwaccel cuda -i video.mkv -vf "scale=-1:720" -r 23 -c:v h264_nvenc -c:a copy -c:s mov_text -movflags +faststart video.mp4
+        ffmpeg -hwaccel cuda -i video.mkv -vf "scale=-1:720" -r 23 -c:v h264_nvenc -preset fast -crf 23 -c:a copy -c:s mov_text -movflags +faststart video.mp4
 
     - name: Upload to Google Drive
       run: python3 upload_to_gdrive.py video.mp4
