@@ -27,7 +27,7 @@ jobs:
 
     - name: Download MKV file
       run: |
-        mkv_url="URL_OF_THE_MKV_FILE"
+        mkv_url="https://tipistream.tipikuy.workers.dev/download.aspx?file=e7HnSX%2FoHKtnUdtL1A5wcSgiyyg6iLre6tz26ZyO96dZb4enEgeyx1GeRZCEdAz8&expiry=ojLvp9JTbjXEecNLxyz0Iw%3D%3D&mac=ab4ea0ffeb35c5b2fcb28a697b921cc097e4191316822dd2656ca8eb665f1ce0"
         filename=$(basename "$mkv_url" .mkv)
         curl -L -o "$filename.mkv" -H "Content-Disposition: attachment; filename=\"$filename.mkv\"" "$mkv_url"
 
