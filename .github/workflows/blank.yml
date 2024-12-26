@@ -17,25 +17,43 @@ jobs:
     - name: Set up dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg mkvtoolnix gpac
-        python3 -m pip install --upgrade pip      
+        sudo apt-get install -y ffmpeg
+        python3 -m pip install --upgrade pip
         python3 -m pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
-    - name: Make script executable
-      run: chmod +x ./convert_mkv_to_mp4.sh
+    - name: Create token.pickle
+      run: |
+        echo "${{ secrets.GDRIVE_TOKEN }}" | base64 --decode > token.pickle
 
     - name: Download MKV file
       run: |
         curl -L -o video.mkv "https://tipistream.tipikuy.workers.dev/download.aspx?file=e7HnSX%2FoHKtnUdtL1A5wcSgiyyg6iLre6tz26ZyO96dZb4enEgeyx1GeRZCEdAz8&expiry=ojLvp9JTbjXEecNLxyz0Iw%3D%3D&mac=ab4ea0ffeb35c5b2fcb28a697b921cc097e4191316822dd2656ca8eb665f1ce0"
 
     - name: Convert MKV to MP4
-      run: python main.py video.mkv video.mp4 copy copy
-
-    - name: Create token.pickle
       run: |
-        echo "${GDRIVE_TOKEN}" | base64 --decode > token.pickle
-      env:
-        GDRIVE_TOKEN: ${{ secrets.GDRIVE_TOKEN }}
+        video="video.mkv"
+        opts="-nostats -loglevel 0 -c:v copy -c:a copy -c:s mov_text -movflags +faststart"
+        
+        if [ -e "${video%.*}.mp4" ]; then
+            echo "Skipping '$(basename "$video")'"
+            exit 0
+        fi
+
+        echo "Processing '$(basename "$video")'"
+
+        if which ffmpeg > /dev/null; then
+            ffmpeg -i "${video}" $opts "${video%.*}.mp4"
+        elif which avconv > /dev/null; then
+            avconv -i "${video}" $opts "${video%.*}.mp4"
+        else
+            echo "Could not locate ffmpeg or avconv"
+            exit 1
+        fi
+
+        if [ "$?" -ne "0" ]; then
+            echo "Failed to convert video '$video'"
+            exit 1
+        fi
 
     - name: Upload to Google Drive
       run: python3 upload_to_gdrive.py video.mp4
