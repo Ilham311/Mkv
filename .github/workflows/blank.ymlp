@@ -17,7 +17,7 @@ jobs:
     - name: Set up dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg mkvtoolnix gpac dcadec aften wget
+        sudo apt-get install -y ffmpeg mkvtoolnix gpac wget
         wget -O gdrive https://github.com/prasmussen/gdrive/releases/download/2.1.0/gdrive-linux-x64
         chmod +x gdrive
         sudo mv gdrive /usr/local/bin/gdrive
