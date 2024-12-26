@@ -33,7 +33,7 @@ jobs:
 
     - name: Convert MKV to MP4
       run: |
-        filename=$(basename "URL_OF_THE_MKV_FILE" .mkv)
+        filename=$(basename "https://tipistream.tipikuy.workers.dev/download.aspx?file=e7HnSX%2FoHKtnUdtL1A5wcSgiyyg6iLre6tz26ZyO96dZb4enEgeyx1GeRZCEdAz8&expiry=ojLvp9JTbjXEecNLxyz0Iw%3D%3D&mac=ab4ea0ffeb35c5b2fcb28a697b921cc097e4191316822dd2656ca8eb665f1ce0" .mkv)
         ffmpeg -i "$filename.mkv" -c:v copy -c:a copy -c:s mov_text -movflags +faststart "$filename.mp4"
 
     - name: Upload to Google Drive
