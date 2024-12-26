@@ -6,8 +6,17 @@ from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 
 # Load token.pickle
-with open('token.pickle', 'rb') as token:
-    creds = pickle.load(token)
+token_path = 'token.pickle'
+if not os.path.exists(token_path):
+    print("Error: token.pickle file not found")
+    sys.exit(1)
+
+with open(token_path, 'rb') as token:
+    try:
+        creds = pickle.load(token)
+    except Exception as e:
+        print(f"Error loading token.pickle: {e}")
+        sys.exit(1)
 
 # If the token is expired, refresh it
 if creds.expired and creds.refresh_token:
