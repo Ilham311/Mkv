@@ -3,7 +3,7 @@ FROM ubuntu:latest
 
 # Install dependencies
 RUN apt-get update && \
-    apt-get install -y ffmpeg curl python3-pip && \
+    apt-get install -y ffmpeg curl python3-pip python3-full && \
     python3 -m pip install --upgrade pip && \
     python3 -m pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
