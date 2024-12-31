@@ -27,7 +27,7 @@ jobs:
 
     - name: Download MKV file
       run: |
-        curl -L -o video.mkv "https://sxtcp.tg-index.workers.dev/download.aspx?file=Yx5s%2Be9wDli6mozqFtq2sX3XZGG5PxANRhGgYe3KHRQRVaMmmEmgYedSUzowgiHP&expiry=950dgENNoY%2F%2Fzr%2B9Tp89Kg%3D%3D&mac=36c69f84b389142965d4b424adfeb7cd7d6c02286f330904b54996baea17e19a"
+        curl -L -o video.mkv "https://sxtcp.tg-index.workers.dev/download.aspx?file=naRlIvl%2Bs5RCHMw%2FJPg%2BRnAq7ccMGfLagq10E3S5h%2FejMVt9rpB7oTun4KU5ykwB&expiry=kzN6V3ZPQ3guuSQlbi44MA%3D%3D&mac=bec7656ac78a2b6a45f598d96d66b6721aa5969f3035b633137d41140402aecd"
 
     - name: Convert MKV to MP4
       run: |
